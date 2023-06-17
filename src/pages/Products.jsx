@@ -1,13 +1,18 @@
-import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { Link, useSearchParams, useLoaderData } from "react-router-dom";
 import FilterNav from "../components/FilterNav";
 import { getProducts } from "../../api";
 
+export function loader() {
+  return getProducts();
+}
+
 export default function Products() {
-  const [products, setProducts] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const products = useLoaderData();
+
   const selectedCategory = searchParams.get("category");
   const selectedBrand = searchParams.get("brand");
   const selectedColor = searchParams.get("color");
@@ -29,23 +34,6 @@ export default function Products() {
       return prevParams;
     });
   }
-
-  useEffect(() => {
-    async function loadProducts() {
-      setLoading(true);
-      try {
-        const data = await getProducts();
-        setProducts(data);
-      } catch (err) {
-        console.log(err);
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadProducts();
-  }, []);
 
   const filteredProducts = products.filter((product) => {
     const filteredBrand = selectedBrand
@@ -81,10 +69,6 @@ export default function Products() {
       </Link>
     </div>
   ));
-
-  if (loading) {
-    return <h1>Loading...</h1>;
-  }
 
   if (error) {
     return <h1>There was an error: {error.message}</h1>;
