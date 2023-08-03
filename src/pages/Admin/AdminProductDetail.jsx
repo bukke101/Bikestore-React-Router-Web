@@ -1,5 +1,19 @@
-import { useState, useEffect } from "react";
-import { useParams, Link, Outlet, NavLink } from "react-router-dom";
+import { Suspense } from "react";
+import {
+  Link,
+  Outlet,
+  NavLink,
+  useLoaderData,
+  defer,
+  Await,
+} from "react-router-dom";
+import { getProducts } from "../../api";
+import { requireAuth } from "../../utils";
+
+export async function loader({ params, request }) {
+  await requireAuth(request);
+  return defer({ products: getProducts(params.id) });
+}
 
 export default function AdminProductDetail() {
   const activeStyles = {
@@ -8,55 +22,60 @@ export default function AdminProductDetail() {
     color: "#161616",
   };
 
-  const { id } = useParams();
-  const [currentProduct, setCurrentProduct] = useState(null);
+  const dataPromise = useLoaderData();
 
-  useEffect(() => {
-    fetch(`/api/admin/products/${id}`)
-      .then((res) => res.json())
-      .then((data) => setCurrentProduct(data.products));
-  }, []);
+  function renderProduct(product) {
+    return (
+      <section>
+        <Link to=".." relative="path" className="back-button">
+          &larr;{" "}
+          <span>
+            Back to all <b>products</b>
+          </span>
+        </Link>
 
-  if (!currentProduct) {
-    return <h1>Loading...</h1>;
-  }
-
-  return (
-    <section>
-      <Link to=".." relative="path" className="back-button">
-        &larr; <span>Back to all products</span>
-      </Link>
-
-      <div className="admin-product-detail-layout-container">
-        <div className="admin-product-detail">
-          <img src={currentProduct.image} />
-          <div className="admin-product-detail-info-text">
-            <h3>
-              {currentProduct.brand} {currentProduct.name}
-            </h3>
-            <h4>${currentProduct.price}</h4>
+        <div className="admin-product-detail-layout-container">
+          <div className="admin-product-detail">
+            <img src={product.image} />
+            <div className="admin-product-detail-info-text">
+              <h3>
+                {product.brand} {product.name}
+              </h3>
+              <h4>${product.price}</h4>
+            </div>
           </div>
+
+          <nav className="admin-product-detail-nav">
+            <NavLink
+              to="."
+              end
+              style={({ isActive }) => (isActive ? activeStyles : null)}
+            >
+              Details
+            </NavLink>
+
+            <NavLink
+              to="photos"
+              style={({ isActive }) => (isActive ? activeStyles : null)}
+            >
+              Photos
+            </NavLink>
+          </nav>
+
+          <Outlet context={{ product }} />
         </div>
-
-        <nav className="admin-product-detail-nav">
-          <NavLink
-            to="."
-            end
-            style={({ isActive }) => (isActive ? activeStyles : null)}
-          >
-            Details
-          </NavLink>
-
-          <NavLink
-            to="photos"
-            style={({ isActive }) => (isActive ? activeStyles : null)}
-          >
-            Photos
-          </NavLink>
-        </nav>
-
-        <Outlet context={{ currentProduct }} />
-      </div>
-    </section>
+      </section>
+    );
+  }
+  return (
+    <Suspense
+      fallbacl={
+        <div className="loading">
+          <h2>Loading Products...</h2>
+        </div>
+      }
+    >
+      <Await resolve={dataPromise.products}>{renderProduct}</Await>
+    </Suspense>
   );
 }

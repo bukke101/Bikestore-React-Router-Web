@@ -1,29 +1,28 @@
 import { Link } from "react-router-dom";
+import aboutImg from "../assets/images/alyk.webp";
 
 export default function About() {
   return (
-    <div className="about-page-container">
-      {/* <img src={bgImg} className="about-hero-image" /> */}
-      <div className="about-page-content">
-        <h1>Don’t squeeze in a sedan when you could relax in a van.</h1>
+    <div className="about-container">
+      <img src={aboutImg} className="about-img" />
+      <div className="about-description">
+        <h1>The only store where BMX culture gathers</h1>
         <p>
-          Our mission is to enliven your road trip with the perfect travel van
-          rental. Our vans are recertified before each trip to ensure your
-          travel plans can go off without a hitch. (Hitch costs extra 😉)
-        </p>
-        <p>
-          Our team is full of vanlife enthusiasts who know firsthand the magic
-          of touring the world on 4 wheels.
+          Japan's proud domestic BMX frame / parts brand started in 2012 by
+          three riders who have been leading the Japanese BMX scene for many
+          years, Reito Murata, Yugo Ito, and Daisuke Maja. Transmitting Japanese
+          brands to the world with not only in Japan, but also with team riders
+          from all over the world.
         </p>
       </div>
-      <div className="about-page-cta">
-        <h2>
-          Your destination is waiting.
+      <div className="about-hero">
+        <h3 className="about-hero-title">
+          The only store where
           <br />
-          Your van is ready.
-        </h2>
-        <Link className="link-button" to="/">
-          Check out products
+          BMX culture gathers.
+        </h3>
+        <Link className="about-hero-btn" to="/products">
+          Check our products
         </Link>
       </div>
     </div>
