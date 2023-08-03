@@ -4,3 +4,12 @@ This React-based web application is a dynamic Bike Store showcasing various feat
 
 
 ## Built With:
+
+- React Router DOM
+- Data Layer API (Loader, Action)
+- React Context
+- useMemo
+- MirageJS
+- Firebase
+- HTML
+- CSS
